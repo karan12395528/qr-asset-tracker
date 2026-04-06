@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Login — QR Asset Tracker</title>
+  <meta name="description" content="Sign in to QR Asset Tracker — Enterprise Asset Management System"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="animated-bg"></div>
+
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-logo">
+        <div class="auth-logo-icon">📦</div>
+        <div>
+          <h1>QR Tracker</h1>
+          <p>Enterprise Asset Management</p>
+        </div>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm">
+        <h2 class="auth-title">Welcome back 👋</h2>
+        <p class="auth-subtitle">Sign in to your account to continue</p>
+        <div class="form-group">
+          <label class="form-label" for="loginEmail">Email Address</label>
+          <input type="email" id="loginEmail" class="form-control" placeholder="you@company.com" autocomplete="email"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="loginPassword">Password</label>
+          <input type="password" id="loginPassword" class="form-control" placeholder="Enter your password" autocomplete="current-password"/>
+        </div>
+        <button class="btn btn-primary btn-lg" style="width:100%" id="loginBtn" onclick="handleLogin()">
+          🔐 Sign In
+        </button>
+        <div class="auth-toggle">
+          Don't have an account? <a href="#" onclick="toggleForm()">Register here</a>
+        </div>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerForm" style="display:none">
+        <h2 class="auth-title">Create Account</h2>
+        <p class="auth-subtitle">Join your team on QR Asset Tracker</p>
+        <div class="form-group">
+          <label class="form-label" for="regName">Full Name</label>
+          <input type="text" id="regName" class="form-control" placeholder="John Smith"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regEmail">Email Address</label>
+          <input type="email" id="regEmail" class="form-control" placeholder="you@company.com"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regPassword">Password</label>
+          <input type="password" id="regPassword" class="form-control" placeholder="Min 6 characters"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="regRole">Role</label>
+          <select id="regRole" class="form-control">
+            <option value="staff">Staff</option>
+            <option value="admin">Admin</option>
+          </select>
+        </div>
+        <button class="btn btn-primary btn-lg" style="width:100%" id="regBtn" onclick="handleRegister()">
+          ✨ Create Account
+        </button>
+        <div class="auth-toggle">
+          Already have an account? <a href="#" onclick="toggleForm()">Sign in</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/auth.js"></script>
+</body>
+</html>

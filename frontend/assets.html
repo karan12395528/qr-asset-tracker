@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Assets — QR Asset Tracker</title>
+  <meta name="description" content="Manage all enterprise assets, generate QR codes, and track inventory"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="animated-bg"></div>
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">📦</div>
+        <h2>QR Asset Tracker</h2>
+        <p>Enterprise Management</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="assets.html" class="nav-item active">
+          <span class="nav-icon">🗂️</span> Assets
+        </a>
+        <a href="scan.html" class="nav-item">
+          <span class="nav-icon">📷</span> Scan QR
+        </a>
+        <div class="nav-section-label">Reports</div>
+        <a href="history.html" class="nav-item">
+          <span class="nav-icon">📋</span> Audit History
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar" id="userInitial">U</div>
+          <div class="user-info">
+            <div class="user-name" id="userName">User</div>
+            <div class="user-role" id="userRole">staff</div>
+          </div>
+          <button class="logout-btn" onclick="logout()" title="Logout">⏻</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">Asset Management</div>
+          <div class="topbar-subtitle">View, manage, and generate QR codes for all assets</div>
+        </div>
+        <button class="btn btn-primary" onclick="openAddModal()">➕ Add Asset</button>
+      </div>
+
+      <div class="page-content">
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <div class="search-wrapper">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="searchInput" placeholder="Search by name, tag, or location..." oninput="filterAssets()"/>
+          </div>
+          <select class="form-control" style="width:auto" id="statusFilter" onchange="filterAssets()">
+            <option value="">All Status</option>
+            <option value="available">Available</option>
+            <option value="checked-out">Checked Out</option>
+          </select>
+          <select class="form-control" style="width:auto" id="categoryFilter" onchange="filterAssets()">
+            <option value="">All Categories</option>
+          </select>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+          <table id="assetsTable">
+            <thead>
+              <tr>
+                <th>Asset Name</th>
+                <th>Tag ID</th>
+                <th>Category</th>
+                <th>Location</th>
+                <th>Status</th>
+                <th>Added</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="assetsBody">
+              <tr><td colspan="7" style="text-align:center;padding:40px;color:var(--text-muted)">Loading assets...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Asset Modal -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">➕ Add New Asset</h2>
+        <button class="modal-close" onclick="closeModal('addModal')">×</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Asset Name *</label>
+        <input type="text" id="assetName" class="form-control" placeholder="e.g. Dell Laptop 15"/>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <input type="text" id="assetCategory" class="form-control" placeholder="e.g. Electronics"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input type="text" id="assetLocation" class="form-control" placeholder="e.g. IT Room"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input type="text" id="assetDescription" class="form-control" placeholder="Optional description"/>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('addModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="addAsset()">Create Asset & Generate QR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Edit Asset Modal -->
+  <div class="modal-overlay" id="editModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">✏️ Edit Asset</h2>
+        <button class="modal-close" onclick="closeModal('editModal')">×</button>
+      </div>
+      <input type="hidden" id="editAssetId"/>
+      <div class="form-group">
+        <label class="form-label">Asset Name *</label>
+        <input type="text" id="editName" class="form-control"/>
+      </div>
+      <div class="grid-2">
+        <div class="form-group">
+          <label class="form-label">Category</label>
+          <input type="text" id="editCategory" class="form-control"/>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Location</label>
+          <input type="text" id="editLocation" class="form-control"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Description</label>
+        <input type="text" id="editDescription" class="form-control"/>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('editModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="saveEdit()">Save Changes</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- QR Code Modal -->
+  <div class="modal-overlay" id="qrModal">
+    <div class="modal" style="max-width:380px">
+      <div class="modal-header">
+        <h2 class="modal-title">📱 QR Code</h2>
+        <button class="modal-close" onclick="closeModal('qrModal')">×</button>
+      </div>
+      <div class="qr-modal-body">
+        <img id="qrImage" class="qr-image" src="" alt="QR Code"/>
+        <div id="qrAssetName" style="font-size:16px;font-weight:700;margin-bottom:8px"></div>
+        <div class="qr-tag" id="qrTagDisplay"></div>
+        <div style="margin-top:16px">
+          <button class="btn btn-primary btn-sm" onclick="downloadQR()">⬇ Download QR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/assets.js"></script>
+</body>
+</html>

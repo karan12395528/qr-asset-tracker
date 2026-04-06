@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Audit History — QR Asset Tracker</title>
+  <meta name="description" content="Full audit log of all asset actions and changes"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="animated-bg"></div>
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">📦</div>
+        <h2>QR Asset Tracker</h2>
+        <p>Enterprise Management</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="assets.html" class="nav-item">
+          <span class="nav-icon">🗂️</span> Assets
+        </a>
+        <a href="scan.html" class="nav-item">
+          <span class="nav-icon">📷</span> Scan QR
+        </a>
+        <div class="nav-section-label">Reports</div>
+        <a href="history.html" class="nav-item active">
+          <span class="nav-icon">📋</span> Audit History
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar" id="userInitial">U</div>
+          <div class="user-info">
+            <div class="user-name" id="userName">User</div>
+            <div class="user-role" id="userRole">staff</div>
+          </div>
+          <button class="logout-btn" onclick="logout()" title="Logout">⏻</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">Audit History</div>
+          <div class="topbar-subtitle">Full log of all asset actions and events</div>
+        </div>
+      </div>
+
+      <div class="page-content">
+        <!-- Filters -->
+        <div class="toolbar">
+          <div class="search-wrapper" style="max-width:280px">
+            <span class="search-icon">🔍</span>
+            <input type="text" class="search-input" id="historySearch" placeholder="Search logs..." oninput="filterHistory()"/>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <label style="font-size:13px;color:var(--text-muted);white-space:nowrap">From:</label>
+            <input type="date" id="fromDate" class="form-control" style="width:auto" onchange="loadHistory()"/>
+          </div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <label style="font-size:13px;color:var(--text-muted);white-space:nowrap">To:</label>
+            <input type="date" id="toDate" class="form-control" style="width:auto" onchange="loadHistory()"/>
+          </div>
+          <button class="btn btn-outline btn-sm" onclick="clearFilters()">Clear</button>
+        </div>
+
+        <!-- Table -->
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th>Timestamp</th>
+                <th>Action</th>
+                <th>Asset</th>
+                <th>Tag</th>
+                <th>Performed By</th>
+                <th>Details</th>
+              </tr>
+            </thead>
+            <tbody id="historyBody">
+              <tr><td colspan="6" style="text-align:center;padding:40px;color:var(--text-muted)">Loading history...</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div id="historyEmpty" style="display:none">
+          <div class="empty-state">
+            <div class="empty-icon">📋</div>
+            <h3>No audit records found</h3>
+            <p style="font-size:13px;margin-top:6px">Actions will appear here as assets are managed</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/history.js"></script>
+</body>
+</html>

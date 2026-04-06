@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Scan QR — QR Asset Tracker</title>
+  <meta name="description" content="Scan QR codes to checkout or return assets instantly"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+</head>
+<body>
+  <div class="animated-bg"></div>
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">📦</div>
+        <h2>QR Asset Tracker</h2>
+        <p>Enterprise Management</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="assets.html" class="nav-item">
+          <span class="nav-icon">🗂️</span> Assets
+        </a>
+        <a href="scan.html" class="nav-item active">
+          <span class="nav-icon">📷</span> Scan QR
+        </a>
+        <div class="nav-section-label">Reports</div>
+        <a href="history.html" class="nav-item">
+          <span class="nav-icon">📋</span> Audit History
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar" id="userInitial">U</div>
+          <div class="user-info">
+            <div class="user-name" id="userName">User</div>
+            <div class="user-role" id="userRole">staff</div>
+          </div>
+          <button class="logout-btn" onclick="logout()" title="Logout">⏻</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">Scan QR Code</div>
+          <div class="topbar-subtitle">Scan an asset QR code to check out or return it</div>
+        </div>
+      </div>
+
+      <div class="page-content">
+        <div class="grid-2">
+          <!-- Scanner Side -->
+          <div>
+            <div class="card" style="margin-bottom:20px">
+              <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">📷 Camera Scanner</h3>
+              <div class="scanner-container" id="scannerContainer">
+                <div id="qr-reader"></div>
+                <div class="scanner-placeholder" id="scannerPlaceholder">
+                  <div class="scan-icon">📷</div>
+                  <p style="font-size:14px;font-weight:600">Ready to Scan</p>
+                  <p style="font-size:12px;margin-top:4px">Click Start Scanner below</p>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;margin-top:14px">
+                <button class="btn btn-primary" id="startScanBtn" onclick="startScanner()">▶ Start Scanner</button>
+                <button class="btn btn-outline" id="stopScanBtn" onclick="stopScanner()" style="display:none">⏹ Stop</button>
+              </div>
+            </div>
+
+            <!-- Manual Entry -->
+            <div class="card">
+              <h3 style="font-size:15px;font-weight:700;margin-bottom:16px">⌨️ Manual Tag Entry</h3>
+              <div style="display:flex;gap:10px">
+                <input type="text" id="manualTag" class="form-control" placeholder="Enter asset tag e.g. ASSET-A1B2C3"/>
+                <button class="btn btn-primary" onclick="lookupManualTag()">Search</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Result Side -->
+          <div>
+            <div id="assetResultSection" style="display:none">
+              <div class="asset-result-card">
+                <div class="asset-result-header">
+                  <div class="asset-icon-circle">📦</div>
+                  <div>
+                    <h2 id="resultName" style="font-size:18px;font-weight:700"></h2>
+                    <code id="resultTag" style="font-size:12px;color:var(--text-muted)"></code>
+                  </div>
+                </div>
+                <div class="asset-meta">
+                  <div class="meta-item">
+                    <label>Category</label>
+                    <p id="resultCategory">—</p>
+                  </div>
+                  <div class="meta-item">
+                    <label>Location</label>
+                    <p id="resultLocation">—</p>
+                  </div>
+                  <div class="meta-item">
+                    <label>Status</label>
+                    <p id="resultStatus">—</p>
+                  </div>
+                  <div class="meta-item">
+                    <label>Asset ID</label>
+                    <p id="resultId">—</p>
+                  </div>
+                </div>
+                <div style="margin-top:16px">
+                  <div class="form-group">
+                    <label class="form-label">Notes (optional)</label>
+                    <input type="text" id="actionNotes" class="form-control" placeholder="Add a note for this action..."/>
+                  </div>
+                  <div style="display:flex;gap:10px;margin-top:12px">
+                    <button id="checkoutBtn" class="btn btn-success" onclick="performCheckout()">
+                      🔄 Check Out
+                    </button>
+                    <button id="returnBtn" class="btn btn-danger" onclick="performReturn()">
+                      ↩ Return
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div id="noResultSection">
+              <div class="card">
+                <div class="empty-state">
+                  <div class="empty-icon">🔍</div>
+                  <h3>No asset scanned yet</h3>
+                  <p style="font-size:13px;margin-top:6px">Start the scanner or enter a tag manually</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/scan.js"></script>
+</body>
+</html>

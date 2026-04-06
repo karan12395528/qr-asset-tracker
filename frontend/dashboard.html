@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dashboard — QR Asset Tracker</title>
+  <meta name="description" content="Asset tracking dashboard with live stats and recent activity"/>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="animated-bg"></div>
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">📦</div>
+        <h2>QR Asset Tracker</h2>
+        <p>Enterprise Management</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a href="dashboard.html" class="nav-item active" id="nav-dashboard">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="assets.html" class="nav-item" id="nav-assets">
+          <span class="nav-icon">🗂️</span> Assets
+        </a>
+        <a href="scan.html" class="nav-item" id="nav-scan">
+          <span class="nav-icon">📷</span> Scan QR
+        </a>
+        <div class="nav-section-label">Reports</div>
+        <a href="history.html" class="nav-item" id="nav-history">
+          <span class="nav-icon">📋</span> Audit History
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar" id="userInitial">U</div>
+          <div class="user-info">
+            <div class="user-name" id="userName">User</div>
+            <div class="user-role" id="userRole">staff</div>
+          </div>
+          <button class="logout-btn" onclick="logout()" title="Logout">⏻</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">Dashboard</div>
+          <div class="topbar-subtitle">Welcome back! Here's what's happening.</div>
+        </div>
+        <a href="assets.html" class="btn btn-primary">
+          ➕ Add Asset
+        </a>
+      </div>
+
+      <div class="page-content">
+        <!-- Stats -->
+        <div class="stats-grid">
+          <div class="stat-card indigo">
+            <div class="stat-info">
+              <div class="stat-label">Total Assets</div>
+              <div class="stat-value indigo" id="totalAssets">—</div>
+              <div class="stat-change">Registered in system</div>
+            </div>
+            <div class="stat-icon">🗂️</div>
+          </div>
+          <div class="stat-card green">
+            <div class="stat-info">
+              <div class="stat-label">Available</div>
+              <div class="stat-value green" id="availableAssets">—</div>
+              <div class="stat-change">Ready for checkout</div>
+            </div>
+            <div class="stat-icon">✅</div>
+          </div>
+          <div class="stat-card amber">
+            <div class="stat-info">
+              <div class="stat-label">Checked Out</div>
+              <div class="stat-value amber" id="checkedOutAssets">—</div>
+              <div class="stat-change">Currently in use</div>
+            </div>
+            <div class="stat-icon">🔄</div>
+          </div>
+          <div class="stat-card blue">
+            <div class="stat-info">
+              <div class="stat-label">Total Users</div>
+              <div class="stat-value blue" id="totalUsers">—</div>
+              <div class="stat-change">Registered staff</div>
+            </div>
+            <div class="stat-icon">👥</div>
+          </div>
+        </div>
+
+        <!-- Recent Activity & Categories -->
+        <div class="grid-2">
+          <div class="card">
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+              <h3 style="font-size:16px;font-weight:700">Recent Activity</h3>
+              <a href="history.html" class="btn btn-outline btn-sm">View All</a>
+            </div>
+            <div id="activityList">
+              <div class="empty-state">
+                <div class="empty-icon">📋</div>
+                <h3>Loading activity...</h3>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div style="margin-bottom:18px">
+              <h3 style="font-size:16px;font-weight:700">Asset Categories</h3>
+            </div>
+            <div id="categoriesList">
+              <div class="empty-state">
+                <div class="empty-icon">🗂️</div>
+                <h3>No categories yet</h3>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="card" style="margin-top:24px">
+          <h3 style="font-size:16px;font-weight:700;margin-bottom:18px">⚡ Quick Actions</h3>
+          <div style="display:flex;gap:12px;flex-wrap:wrap">
+            <a href="assets.html" class="btn btn-primary">➕ Add New Asset</a>
+            <a href="scan.html" class="btn btn-outline">📷 Scan & Checkout</a>
+            <a href="history.html" class="btn btn-outline">📋 View Audit Log</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/dashboard.js"></script>
+</body>
+</html>
