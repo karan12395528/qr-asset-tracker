@@ -1,4 +1,4 @@
-const API = 'http://localhost:5000/api';
+const API = 'https://qr-asset-tracker-1.onrender.com/api';
 
 function getToken() { return localStorage.getItem('token'); }
 function getUser() { return JSON.parse(localStorage.getItem('user') || '{}'); }
