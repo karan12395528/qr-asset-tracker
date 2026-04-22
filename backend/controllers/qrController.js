@@ -1,6 +1,6 @@
 const qrService = require('../services/qrService');
 
-exports.generateQRCode = async (req, res) => {
+exports.getQRCode = async (req, res) => {
   try {
     const data = await qrService.generateQRCode(req.params.tag, req.user.company_id);
     res.json(data);
