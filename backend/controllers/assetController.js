@@ -3,7 +3,7 @@ const assetService = require('../services/assetService');
 // GET all assets
 exports.getAllAssets = async (req, res) => {
   try {
-    const assets = await assetService.getAllAssets(req.query);
+    const assets = await assetService.getAllAssets(req.query, req.user.company_id);
     res.json(assets);
   } catch (err) {
     console.error(err);
@@ -14,7 +14,7 @@ exports.getAllAssets = async (req, res) => {
 // GET single asset
 exports.getAssetByIdentifier = async (req, res) => {
   try {
-    const asset = await assetService.getAssetByIdentifier(req.params.identifier);
+    const asset = await assetService.getAssetByIdentifier(req.params.identifier, req.user.company_id);
     if (!asset) return res.status(404).json({ error: 'Asset not found' });
     res.json(asset);
   } catch (err) {
@@ -26,7 +26,7 @@ exports.getAssetByIdentifier = async (req, res) => {
 // CREATE asset
 exports.createAsset = async (req, res) => {
   try {
-    const asset = await assetService.createAsset(req.body, req.user.id);
+    const asset = await assetService.createAsset(req.body, req.user);
     res.status(201).json(asset);
   } catch (err) {
     console.error(err);
@@ -37,7 +37,8 @@ exports.createAsset = async (req, res) => {
 // UPDATE asset
 exports.updateAsset = async (req, res) => {
   try {
-    const asset = await assetService.updateAsset(req.params.id, req.body, req.user.id);
+    const asset = await assetService.updateAsset(req.params.id, req.body, req.user);
+    if (!asset) return res.status(404).json({ error: 'Asset not found' });
     res.json(asset);
   } catch (err) {
     console.error(err);
@@ -48,7 +49,8 @@ exports.updateAsset = async (req, res) => {
 // DELETE asset
 exports.deleteAsset = async (req, res) => {
   try {
-    await assetService.deleteAsset(req.params.id);
+    const deleted = await assetService.deleteAsset(req.params.id, req.user.company_id);
+    if (!deleted) return res.status(404).json({ error: 'Asset not found' });
     res.json({ message: 'Asset deleted' });
   } catch (err) {
     console.error(err);

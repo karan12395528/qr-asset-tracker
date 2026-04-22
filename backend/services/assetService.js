@@ -2,25 +2,22 @@ const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 
 // GET all assets
-exports.getAllAssets = async ({ status, category, search }) => {
-  let query = 'SELECT * FROM assets WHERE 1=1';
-  const params = [];
+exports.getAllAssets = async ({ status, category, search }, companyId) => {
+  let query = 'SELECT * FROM assets WHERE company_id = ?';
+  const params = [companyId];
 
   if (status) {
     query += ' AND status = ?';
     params.push(status);
   }
-
   if (category) {
     query += ' AND category = ?';
     params.push(category);
   }
-
   if (search) {
     query += ' AND (name LIKE ? OR tag LIKE ? OR location LIKE ?)';
     params.push(`%${search}%`, `%${search}%`, `%${search}%`);
   }
-
   query += ' ORDER BY created_at DESC';
 
   const [rows] = await pool.query(query, params);
@@ -28,16 +25,16 @@ exports.getAllAssets = async ({ status, category, search }) => {
 };
 
 // GET asset
-exports.getAssetByIdentifier = async (identifier) => {
+exports.getAssetByIdentifier = async (identifier, companyId) => {
   const [rows] = await pool.query(
-    'SELECT * FROM assets WHERE tag = ? OR id = ?',
-    [identifier, identifier]
+    'SELECT * FROM assets WHERE (tag = ? OR id = ?) AND company_id = ?',
+    [identifier, identifier, companyId]
   );
   return rows[0];
 };
 
 // CREATE asset
-exports.createAsset = async (data, userId) => {
+exports.createAsset = async (data, user) => {
   const { name, category, location, description } = data;
 
   if (!name) throw new Error('Asset name required');
@@ -45,13 +42,13 @@ exports.createAsset = async (data, userId) => {
   const tag = 'ASSET-' + uuidv4().split('-')[0].toUpperCase();
 
   const [result] = await pool.query(
-    'INSERT INTO assets (name, tag, category, location, description) VALUES (?, ?, ?, ?, ?)',
-    [name, tag, category || 'General', location || 'Main Office', description || '']
+    'INSERT INTO assets (company_id, name, tag, category, location, description) VALUES (?, ?, ?, ?, ?, ?)',
+    [user.company_id, name, tag, category || 'General', location || 'Main Office', description || '']
   );
 
   await pool.query(
-    'INSERT INTO audit_log (asset_id, action, performed_by, details) VALUES (?, ?, ?, ?)',
-    [result.insertId, 'ASSET_CREATED', userId, `Asset "${name}" created with tag ${tag}`]
+    'INSERT INTO audit_log (company_id, asset_id, action, performed_by, details) VALUES (?, ?, ?, ?, ?)',
+    [user.company_id, result.insertId, 'ASSET_CREATED', user.id, `Asset "${name}" created with tag ${tag}`]
   );
 
   const [asset] = await pool.query('SELECT * FROM assets WHERE id = ?', [result.insertId]);
@@ -59,17 +56,19 @@ exports.createAsset = async (data, userId) => {
 };
 
 // UPDATE asset
-exports.updateAsset = async (id, data, userId) => {
+exports.updateAsset = async (id, data, user) => {
   const { name, category, location, description } = data;
 
-  await pool.query(
-    'UPDATE assets SET name = ?, category = ?, location = ?, description = ? WHERE id = ?',
-    [name, category, location, description, id]
+  const [updateResult] = await pool.query(
+    'UPDATE assets SET name = ?, category = ?, location = ?, description = ? WHERE id = ? AND company_id = ?',
+    [name, category, location, description, id, user.company_id]
   );
 
+  if (updateResult.affectedRows === 0) return null;
+
   await pool.query(
-    'INSERT INTO audit_log (asset_id, action, performed_by, details) VALUES (?, ?, ?, ?)',
-    [id, 'ASSET_UPDATED', userId, 'Asset updated']
+    'INSERT INTO audit_log (company_id, asset_id, action, performed_by, details) VALUES (?, ?, ?, ?, ?)',
+    [user.company_id, id, 'ASSET_UPDATED', user.id, 'Asset updated']
   );
 
   const [asset] = await pool.query('SELECT * FROM assets WHERE id = ?', [id]);
@@ -77,6 +76,7 @@ exports.updateAsset = async (id, data, userId) => {
 };
 
 // DELETE asset
-exports.deleteAsset = async (id) => {
-  await pool.query('DELETE FROM assets WHERE id = ?', [id]);
+exports.deleteAsset = async (id, companyId) => {
+  const [result] = await pool.query('DELETE FROM assets WHERE id = ? AND company_id = ?', [id, companyId]);
+  return result.affectedRows > 0;
 };

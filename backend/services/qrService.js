@@ -1,10 +1,10 @@
 const QRCode = require('qrcode');
 const pool = require('../config/db');
 
-exports.generateQRCode = async (tag) => {
+exports.generateQRCode = async (tag, companyId) => {
   const [rows] = await pool.query(
-    'SELECT * FROM assets WHERE tag = ?',
-    [tag]
+    'SELECT * FROM assets WHERE tag = ? AND company_id = ?',
+    [tag, companyId]
   );
 
   if (rows.length === 0)

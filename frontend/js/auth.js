@@ -51,8 +51,8 @@ async function handleRegister() {
   const name = document.getElementById('regName').value.trim();
   const email = document.getElementById('regEmail').value.trim();
   const password = document.getElementById('regPassword').value;
-  const role = document.getElementById('regRole').value;
-  if (!name || !email || !password) return showToast('Please fill in all fields', 'error');
+  const companyName = document.getElementById('regCompany').value.trim();
+  if (!name || !email || !password || !companyName) return showToast('Please fill in all fields', 'error');
   if (password.length < 6) return showToast('Password must be at least 6 characters', 'error');
 
   const btn = document.getElementById('regBtn');
@@ -62,7 +62,7 @@ async function handleRegister() {
     const res = await fetch(`${API}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name, email, password, role })
+      body: JSON.stringify({ name, email, password, companyName })
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.error || 'Registration failed');

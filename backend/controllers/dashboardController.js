@@ -1,21 +1,21 @@
 const dashboardService = require('../services/dashboardService');
 
-// GET STATS
+// GET dashboard stats
 exports.getStats = async (req, res) => {
   try {
-    const data = await dashboardService.getStats();
-    res.json(data);
+    const stats = await dashboardService.getStats(req.user.company_id);
+    res.json(stats);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
   }
 };
 
-// GET AUDIT LOG
+// GET audit log
 exports.getAuditLog = async (req, res) => {
   try {
-    const data = await dashboardService.getAuditLog(req.query);
-    res.json(data);
+    const log = await dashboardService.getAuditLog(req.query, req.user.company_id);
+    res.json(log);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Server error' });
