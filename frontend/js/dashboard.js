@@ -38,6 +38,9 @@ document.getElementById('userInitial').textContent = (user.name || 'U')[0].toUpp
 if (user.role === 'admin' || user.role === 'superadmin') {
   document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
 }
+if (user.role === 'superadmin') {
+  document.querySelectorAll('.super-only').forEach(el => el.style.display = 'flex');
+}
 
 async function loadDashboard() {
   try {

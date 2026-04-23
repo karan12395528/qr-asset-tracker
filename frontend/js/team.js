@@ -34,6 +34,10 @@ document.getElementById('userName').textContent = user.name || 'User';
 document.getElementById('userRole').textContent = user.role || 'staff';
 document.getElementById('userInitial').textContent = (user.name || 'U')[0].toUpperCase();
 
+if (user.role === 'superadmin') {
+  document.querySelectorAll('.super-only').forEach(el => el.style.display = 'flex');
+}
+
 async function loadTeam() {
   try {
     const res = await authFetch(`${API}/auth/users`);

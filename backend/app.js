@@ -8,6 +8,7 @@ const checkoutRoutes = require('./routes/checkout');
 const dashboardRoutes = require('./routes/dashboard');
 const categoryRoutes = require('./routes/categories');
 const accessoryRoutes = require('./routes/accessories');
+const superadminRoutes = require('./routes/superadmin');
 
 const app = express();
 
@@ -23,6 +24,7 @@ app.use('/api/checkout', checkoutRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/categories', categoryRoutes);
 app.use('/api/accessories', accessoryRoutes);
+app.use('/api/superadmin', superadminRoutes);
 
 // Health check
 app.get('/api/health', (req, res) => {
