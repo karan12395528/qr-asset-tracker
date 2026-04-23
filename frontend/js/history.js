@@ -27,6 +27,11 @@ document.getElementById('userName').textContent = user.name || 'User';
 document.getElementById('userRole').textContent = user.role || 'staff';
 document.getElementById('userInitial').textContent = (user.name || 'U')[0].toUpperCase();
 
+// Role-based visibility
+if (user.role === 'admin' || user.role === 'superadmin') {
+  document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'flex');
+}
+
 let allHistory = [];
 
 const actionIcons = { CHECKOUT: '🔄', RETURN: '↩', ASSET_CREATED: '➕', ASSET_UPDATED: '✏️', ASSET_DELETED: '🗑️' };

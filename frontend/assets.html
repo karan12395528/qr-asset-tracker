@@ -6,6 +6,12 @@
   <title>Assets — QR Asset Tracker</title>
   <meta name="description" content="Manage all enterprise assets, generate QR codes, and track inventory"/>
   <link rel="stylesheet" href="css/style.css"/>
+  <style>
+    .accessories-list { margin-top: 10px; border: 1px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+    .accessory-item { display: flex; justify-content: space-between; padding: 8px 12px; background: var(--bg-secondary); border-bottom: 1px solid var(--border); font-size: 13px; }
+    .accessory-item:last-child { border-bottom: none; }
+    .category-select-wrapper { display: flex; gap: 8px; }
+  </style>
 </head>
 <body>
   <div class="animated-bg"></div>
@@ -33,6 +39,10 @@
         <a href="history.html" class="nav-item">
           <span class="nav-icon">📋</span> Audit History
         </a>
+        <div class="nav-section-label admin-only" style="display:none">Administration</div>
+        <a href="team.html" class="nav-item admin-only" id="nav-team" style="display:none">
+          <span class="nav-icon">👥</span> Manage Team
+        </a>
       </nav>
       <div class="sidebar-footer">
         <div class="user-pill">
@@ -53,7 +63,7 @@
           <div class="topbar-title">Asset Management</div>
           <div class="topbar-subtitle">View, manage, and generate QR codes for all assets</div>
         </div>
-        <button class="btn btn-primary" onclick="openAddModal()">➕ Add Asset</button>
+        <button class="btn btn-primary admin-only" style="display:none" onclick="openAddModal()">➕ Add Asset</button>
       </div>
 
       <div class="page-content">
@@ -110,7 +120,12 @@
       <div class="grid-2">
         <div class="form-group">
           <label class="form-label">Category</label>
-          <input type="text" id="assetCategory" class="form-control" placeholder="e.g. Electronics"/>
+          <div class="category-select-wrapper">
+            <select id="assetCategory" class="form-control">
+              <option value="">Loading...</option>
+            </select>
+            <button class="btn btn-outline btn-sm" onclick="openAddCategoryModal()" title="Add New Category">+</button>
+          </div>
         </div>
         <div class="form-group">
           <label class="form-label">Location</label>
@@ -124,6 +139,50 @@
       <div class="modal-footer">
         <button class="btn btn-outline" onclick="closeModal('addModal')">Cancel</button>
         <button class="btn btn-primary" onclick="addAsset()">Create Asset & Generate QR</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Category Modal -->
+  <div class="modal-overlay" id="addCategoryModal" style="z-index:1001">
+    <div class="modal" style="max-width:350px">
+      <div class="modal-header">
+        <h2 class="modal-title">➕ New Category</h2>
+        <button class="modal-close" onclick="closeModal('addCategoryModal')">×</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Category Name</label>
+        <input type="text" id="newCategoryName" class="form-control" placeholder="e.g. Furniture"/>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('addCategoryModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="addCategory()">Create</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Accessories Modal -->
+  <div class="modal-overlay" id="accessoriesModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">📦 Accessories</h2>
+        <button class="modal-close" onclick="closeModal('accessoriesModal')">×</button>
+      </div>
+      <div id="accessoriesAssetName" style="font-weight:700;margin-bottom:12px;color:var(--accent)"></div>
+      
+      <div id="accessoriesListRoot"></div>
+
+      <div class="admin-only" style="margin-top:20px;padding-top:20px;border-top:1px solid var(--border)">
+        <h4 style="font-size:13px;margin-bottom:10px">Add Accessory</h4>
+        <div class="grid-2">
+          <input type="text" id="newAccName" class="form-control" placeholder="Name (e.g. Charger)"/>
+          <input type="number" id="newAccQty" class="form-control" value="1" min="1"/>
+        </div>
+        <button class="btn btn-primary btn-sm" style="width:100%;margin-top:10px" onclick="addAccessory()">Add Accessory</button>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('accessoriesModal')">Close</button>
       </div>
     </div>
   </div>
@@ -143,7 +202,7 @@
       <div class="grid-2">
         <div class="form-group">
           <label class="form-label">Category</label>
-          <input type="text" id="editCategory" class="form-control"/>
+          <select id="editCategory" class="form-control"></select>
         </div>
         <div class="form-group">
           <label class="form-label">Location</label>

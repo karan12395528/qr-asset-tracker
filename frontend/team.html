@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Manage Team — QR Asset Tracker</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body>
+  <div class="animated-bg"></div>
+  <div class="app-layout">
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-logo">
+        <div class="logo-icon">📦</div>
+        <h2>QR Asset Tracker</h2>
+        <p>Enterprise Management</p>
+      </div>
+      <nav class="sidebar-nav">
+        <div class="nav-section-label">Main</div>
+        <a href="dashboard.html" class="nav-item">
+          <span class="nav-icon">📊</span> Dashboard
+        </a>
+        <a href="assets.html" class="nav-item">
+          <span class="nav-icon">🗂️</span> Assets
+        </a>
+        <a href="scan.html" class="nav-item">
+          <span class="nav-icon">📷</span> Scan QR
+        </a>
+        <div class="nav-section-label">Reports</div>
+        <a href="history.html" class="nav-item">
+          <span class="nav-icon">📋</span> Audit History
+        </a>
+        <div class="nav-section-label admin-only">Administration</div>
+        <a href="team.html" class="nav-item active admin-only">
+          <span class="nav-icon">👥</span> Manage Team
+        </a>
+      </nav>
+      <div class="sidebar-footer">
+        <div class="user-pill">
+          <div class="user-avatar" id="userInitial">U</div>
+          <div class="user-info">
+            <div class="user-name" id="userName">User</div>
+            <div class="user-role" id="userRole">staff</div>
+          </div>
+          <button class="logout-btn" onclick="logout()" title="Logout">⏻</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="main-content">
+      <div class="topbar">
+        <div>
+          <div class="topbar-title">Team Management</div>
+          <div class="topbar-subtitle">Onboard staff and manage team permissions</div>
+        </div>
+        <button class="btn btn-primary admin-only" onclick="openAddModal()">➕ Add Staff Member</button>
+      </div>
+
+      <div class="page-content">
+        <div class="table-wrapper">
+          <table id="teamTable">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Joined</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="teamBody">
+              <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--text-muted)">Loading team...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Staff Modal -->
+  <div class="modal-overlay" id="addModal">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">➕ Invite Staff Member</h2>
+        <button class="modal-close" onclick="closeModal('addModal')">×</button>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Full Name</label>
+        <input type="text" id="staffName" class="form-control" placeholder="Jane Doe"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email Address</label>
+        <input type="email" id="staffEmail" class="form-control" placeholder="jane@company.com"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Temporary Password</label>
+        <input type="password" id="staffPassword" class="form-control" placeholder="At least 6 characters"/>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-outline" onclick="closeModal('addModal')">Cancel</button>
+        <button class="btn btn-primary" onclick="addStaff()">Create Staff Account</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast-container" id="toastContainer"></div>
+  <script src="js/team.js"></script>
+</body>
+</html>
