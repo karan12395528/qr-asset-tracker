@@ -3,7 +3,7 @@ const dashboardService = require('../services/dashboardService');
 // GET dashboard stats
 exports.getStats = async (req, res) => {
   try {
-    const stats = await dashboardService.getStats(req.user.company_id);
+    const stats = await dashboardService.getStats(req.user);
     res.json(stats);
   } catch (err) {
     console.error(err);
@@ -14,7 +14,7 @@ exports.getStats = async (req, res) => {
 // GET audit log
 exports.getAuditLog = async (req, res) => {
   try {
-    const log = await dashboardService.getAuditLog(req.query, req.user.company_id);
+    const log = await dashboardService.getAuditLog(req.query, req.user);
     res.json(log);
   } catch (err) {
     console.error(err);

@@ -1,24 +1,29 @@
 const pool = require('../config/db');
 const { v4: uuidv4 } = require('uuid');
 
-// GET all assets
-exports.getAllAssets = async ({ status, category, search }, companyId) => {
-  let query = 'SELECT * FROM assets WHERE company_id = ?';
+// GET all assets - Joined with categories to get names
+exports.getAllAssets = async ({ status, categoryId, search }, companyId) => {
+  let query = `
+    SELECT a.*, c.name as category_name 
+    FROM assets a 
+    LEFT JOIN categories c ON a.category_id = c.id
+    WHERE a.company_id = ?
+  `;
   const params = [companyId];
 
   if (status) {
-    query += ' AND status = ?';
+    query += ' AND a.status = ?';
     params.push(status);
   }
-  if (category) {
-    query += ' AND category = ?';
-    params.push(category);
+  if (categoryId) {
+    query += ' AND a.category_id = ?';
+    params.push(categoryId);
   }
   if (search) {
-    query += ' AND (name LIKE ? OR tag LIKE ? OR location LIKE ?)';
+    query += ' AND (a.name LIKE ? OR a.tag LIKE ? OR a.location LIKE ?)';
     params.push(`%${search}%`, `%${search}%`, `%${search}%`);
   }
-  query += ' ORDER BY created_at DESC';
+  query += ' ORDER BY a.created_at DESC';
 
   const [rows] = await pool.query(query, params);
   return rows;
@@ -27,7 +32,10 @@ exports.getAllAssets = async ({ status, category, search }, companyId) => {
 // GET asset
 exports.getAssetByIdentifier = async (identifier, companyId) => {
   const [rows] = await pool.query(
-    'SELECT * FROM assets WHERE (tag = ? OR id = ?) AND company_id = ?',
+    `SELECT a.*, c.name as category_name 
+     FROM assets a 
+     LEFT JOIN categories c ON a.category_id = c.id
+     WHERE (a.tag = ? OR a.id = ?) AND a.company_id = ?`,
     [identifier, identifier, companyId]
   );
   return rows[0];
@@ -35,15 +43,15 @@ exports.getAssetByIdentifier = async (identifier, companyId) => {
 
 // CREATE asset
 exports.createAsset = async (data, user) => {
-  const { name, category, location, description } = data;
+  const { name, category_id, location, description } = data;
 
   if (!name) throw new Error('Asset name required');
 
   const tag = 'ASSET-' + uuidv4().split('-')[0].toUpperCase();
 
   const [result] = await pool.query(
-    'INSERT INTO assets (company_id, name, tag, category, location, description) VALUES (?, ?, ?, ?, ?, ?)',
-    [user.company_id, name, tag, category || 'General', location || 'Main Office', description || '']
+    'INSERT INTO assets (company_id, name, tag, category_id, location, description) VALUES (?, ?, ?, ?, ?, ?)',
+    [user.company_id, name, tag, category_id || null, location || 'Main Office', description || '']
   );
 
   await pool.query(
@@ -57,11 +65,11 @@ exports.createAsset = async (data, user) => {
 
 // UPDATE asset
 exports.updateAsset = async (id, data, user) => {
-  const { name, category, location, description } = data;
+  const { name, category_id, location, description } = data;
 
   const [updateResult] = await pool.query(
-    'UPDATE assets SET name = ?, category = ?, location = ?, description = ? WHERE id = ? AND company_id = ?',
-    [name, category, location, description, id, user.company_id]
+    'UPDATE assets SET name = ?, category_id = ?, location = ?, description = ? WHERE id = ? AND company_id = ?',
+    [name, category_id, location, description, id, user.company_id]
   );
 
   if (updateResult.affectedRows === 0) return null;

@@ -1,7 +1,9 @@
 const pool = require('../config/db');
 
 // STATS
-exports.getStats = async (companyId) => {
+exports.getStats = async (user) => {
+  const companyId = user.company_id;
+
   const [[totalAssets]] = await pool.query(
     'SELECT COUNT(*) as count FROM assets WHERE company_id = ?', [companyId]
   );
@@ -18,11 +20,17 @@ exports.getStats = async (companyId) => {
     'SELECT COUNT(*) as count FROM users WHERE company_id = ?', [companyId]
   );
 
-  const [categories] = await pool.query(
-    'SELECT category, COUNT(*) as count FROM assets WHERE company_id = ? GROUP BY category', [companyId]
-  );
+  // New Category logic: Join with categories table
+  const [categories] = await pool.query(`
+    SELECT c.name as category, COUNT(a.id) as count 
+    FROM categories c 
+    LEFT JOIN assets a ON a.category_id = c.id 
+    WHERE c.company_id = ? 
+    GROUP BY c.id, c.name
+  `, [companyId]);
 
-  const [recentActivity] = await pool.query(`
+  // Recent activity - Staff see only their own, Admins see company-wide
+  let activityQuery = `
     SELECT al.action, al.details, al.timestamp,
            a.name AS asset_name, a.tag,
            u.name AS performed_by
@@ -30,9 +38,17 @@ exports.getStats = async (companyId) => {
     LEFT JOIN assets a ON al.asset_id = a.id
     LEFT JOIN users u ON al.performed_by = u.id
     WHERE al.company_id = ?
-    ORDER BY al.timestamp DESC
-    LIMIT 10
-  `, [companyId]);
+  `;
+  const activityParams = [companyId];
+
+  if (user.role === 'staff') {
+    activityQuery += ' AND al.performed_by = ?';
+    activityParams.push(user.id);
+  }
+
+  activityQuery += ' ORDER BY al.timestamp DESC LIMIT 10';
+
+  const [recentActivity] = await pool.query(activityQuery, activityParams);
 
   return {
     totalAssets: totalAssets.count,
@@ -44,8 +60,10 @@ exports.getStats = async (companyId) => {
   };
 };
 
-// AUDIT LOG
-exports.getAuditLog = async ({ asset_id, from, to }, companyId) => {
+// AUDIT LOG - Staff see only their own, Admins see company-wide
+exports.getAuditLog = async ({ asset_id, from, to }, user) => {
+  const companyId = user.company_id;
+  
   let query = `
     SELECT al.id, al.action, al.details, al.timestamp,
            a.name AS asset_name, a.tag,
@@ -56,6 +74,11 @@ exports.getAuditLog = async ({ asset_id, from, to }, companyId) => {
     WHERE al.company_id = ?
   `;
   const params = [companyId];
+
+  if (user.role === 'staff') {
+    query += ' AND al.performed_by = ?';
+    params.push(user.id);
+  }
 
   if (asset_id) {
     query += ' AND al.asset_id = ?';
