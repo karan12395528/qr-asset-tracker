@@ -3,7 +3,12 @@ const dashboardService = require('../services/dashboardService');
 // GET dashboard stats
 exports.getStats = async (req, res) => {
   try {
-    const stats = await dashboardService.getStats(req.user);
+    const userToQuery = { ...req.user };
+    if (req.user.role === 'superadmin' && req.query.targetCompanyId) {
+      userToQuery.company_id = req.query.targetCompanyId;
+      userToQuery.role = 'admin'; // Act as admin for stats calculation
+    }
+    const stats = await dashboardService.getStats(userToQuery);
     res.json(stats);
   } catch (err) {
     console.error(err);
@@ -14,7 +19,12 @@ exports.getStats = async (req, res) => {
 // GET audit log
 exports.getAuditLog = async (req, res) => {
   try {
-    const log = await dashboardService.getAuditLog(req.query, req.user);
+    const userToQuery = { ...req.user };
+    if (req.user.role === 'superadmin' && req.query.targetCompanyId) {
+      userToQuery.company_id = req.query.targetCompanyId;
+      userToQuery.role = 'admin';
+    }
+    const log = await dashboardService.getAuditLog(req.query, userToQuery);
     res.json(log);
   } catch (err) {
     console.error(err);

@@ -42,9 +42,16 @@ if (user.role === 'superadmin') {
   document.querySelectorAll('.super-only').forEach(el => el.style.display = 'flex');
 }
 
+// SuperAdmin "View As" helper
+const urlParams = new URLSearchParams(window.location.search);
+const viewCompanyId = urlParams.get('viewCompanyId');
+
 async function loadDashboard() {
   try {
-    const res = await authFetch(`${API}/dashboard/stats`);
+    let url = `${API}/dashboard/stats`;
+    if (viewCompanyId) url += `?targetCompanyId=${viewCompanyId}`;
+    
+    const res = await authFetch(url);
     if (!res.ok) throw new Error('Failed to load stats');
     const data = await res.json();
 

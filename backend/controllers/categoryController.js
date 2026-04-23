@@ -2,7 +2,11 @@ const categoryService = require('../services/categoryService');
 
 exports.getCategories = async (req, res) => {
   try {
-    const cats = await categoryService.getCategories(req.user.company_id);
+    let companyId = req.user.company_id;
+    if (req.user.role === 'superadmin' && req.query.targetCompanyId) {
+      companyId = req.query.targetCompanyId;
+    }
+    const cats = await categoryService.getCategories(companyId);
     res.json(cats);
   } catch (err) {
     console.error(err);

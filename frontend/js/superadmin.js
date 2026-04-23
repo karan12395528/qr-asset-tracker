@@ -71,7 +71,7 @@ function renderCompanies(companies) {
   }
 
   tbody.innerHTML = companies.map(c => `
-    <tr>
+    <tr onclick="viewCompanyData('${c.id}')" style="cursor:pointer" title="Click to view company assets">
       <td class="primary">${c.name}</td>
       <td>${new Date(c.created_at).toLocaleDateString()}</td>
       <td>${c.userCount} Members</td>
@@ -79,6 +79,10 @@ function renderCompanies(companies) {
       <td><span class="badge badge-available">Active</span></td>
     </tr>
   `).join('');
+}
+
+function viewCompanyData(companyId) {
+  window.location.href = `assets.html?viewCompanyId=${companyId}`;
 }
 
 loadOverview();

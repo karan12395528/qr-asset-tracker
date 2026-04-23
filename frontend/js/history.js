@@ -40,12 +40,17 @@ let allHistory = [];
 const actionIcons = { CHECKOUT: '🔄', RETURN: '↩', ASSET_CREATED: '➕', ASSET_UPDATED: '✏️', ASSET_DELETED: '🗑️' };
 const actionColors = { CHECKOUT: '#f59e0b', RETURN: '#22c55e', ASSET_CREATED: '#6366f1', ASSET_UPDATED: '#38bdf8', ASSET_DELETED: '#ef4444' };
 
+// SuperAdmin "View As" helper
+const urlParams = new URLSearchParams(window.location.search);
+const viewCompanyId = urlParams.get('viewCompanyId');
+
 async function loadHistory() {
   const from = document.getElementById('fromDate').value;
   const to = document.getElementById('toDate').value;
   let url = `${API}/dashboard/audit?`;
   if (from) url += `from=${from}&`;
   if (to) url += `to=${to}T23:59:59&`;
+  if (viewCompanyId) url += `targetCompanyId=${viewCompanyId}&`;
 
   try {
     const res = await authFetch(url);

@@ -3,7 +3,12 @@ const assetService = require('../services/assetService');
 // GET all assets
 exports.getAllAssets = async (req, res) => {
   try {
-    const assets = await assetService.getAllAssets(req.query, req.user.company_id);
+    // If SuperAdmin provides a targetCompanyId, use it instead of their own
+    let companyId = req.user.company_id;
+    if (req.user.role === 'superadmin' && req.query.targetCompanyId) {
+      companyId = req.query.targetCompanyId;
+    }
+    const assets = await assetService.getAllAssets(req.query, companyId);
     res.json(assets);
   } catch (err) {
     console.error(err);
@@ -14,7 +19,11 @@ exports.getAllAssets = async (req, res) => {
 // GET single asset
 exports.getAssetByIdentifier = async (req, res) => {
   try {
-    const asset = await assetService.getAssetByIdentifier(req.params.identifier, req.user.company_id);
+    let companyId = req.user.company_id;
+    if (req.user.role === 'superadmin' && req.query.targetCompanyId) {
+      companyId = req.query.targetCompanyId;
+    }
+    const asset = await assetService.getAssetByIdentifier(req.params.identifier, companyId);
     if (!asset) return res.status(404).json({ error: 'Asset not found' });
     res.json(asset);
   } catch (err) {

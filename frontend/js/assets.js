@@ -41,11 +41,18 @@ if (user.role === 'superadmin') {
 let allAssets = [];
 let allCategories = [];
 
+// SuperAdmin "View As" helper
+const urlParams = new URLSearchParams(window.location.search);
+const viewCompanyId = urlParams.get('viewCompanyId');
+
 function formatDate(d) { return d ? new Date(d).toLocaleDateString() : '—'; }
 
 async function loadAssets() {
   try {
-    const res = await authFetch(`${API}/assets`);
+    let url = `${API}/assets`;
+    if (viewCompanyId) url += `?targetCompanyId=${viewCompanyId}`;
+    
+    const res = await authFetch(url);
     if (!res.ok) throw new Error('Failed to load');
     allAssets = await res.json();
     renderAssets(allAssets);
@@ -56,7 +63,10 @@ async function loadAssets() {
 
 async function loadCategories() {
   try {
-    const res = await authFetch(`${API}/categories`);
+    let url = `${API}/categories`;
+    if (viewCompanyId) url += `?targetCompanyId=${viewCompanyId}`;
+
+    const res = await authFetch(url);
     if (!res.ok) throw new Error('Failed to load categories');
     allCategories = await res.json();
     populateCategorySelectors();
